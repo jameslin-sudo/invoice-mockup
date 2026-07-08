@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>發票系統 Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif; font-size: 13px; background: #f0f2f5; color: #1a1a2e; }
+
+  /* Layout */
+  .sidebar { position: fixed; left: 0; top: 0; width: 200px; height: 100vh; background: #0f1729; color: #a0aec0; padding: 20px 0; }
+  .sidebar-logo { padding: 8px 20px 24px; font-size: 16px; font-weight: 700; color: #fff; border-bottom: 1px solid #2d3748; margin-bottom: 8px; }
+  .sidebar-logo span { color: #7c5cbf; }
+  .sidebar-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all .15s; font-size: 13px; }
+  .sidebar-item:hover { background: #1a2540; color: #fff; }
+  .sidebar-item.active { background: #1e2f52; color: #fff; border-left: 3px solid #7c5cbf; }
+  .sidebar-section { padding: 16px 20px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #4a5568; }
+
+  .main { margin-left: 200px; padding: 24px; min-height: 100vh; }
+
+  /* Page header */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 12px; color: #718096; margin-top: 2px; }
+
+  /* Card */
+  .card { background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px; }
+  .card-header { padding: 14px 18px; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; color: #2d3748; display: flex; align-items: center; gap: 8px; }
+  .card-body { padding: 16px 18px; }
+
+  /* Filters */
+  .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+  .filter-grid-2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .form-group label { display: block; font-size: 11px; color: #718096; margin-bottom: 4px; font-weight: 500; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 7px 10px; border: 1px solid #e2e8f0; border-radius: 5px;
+    font-size: 12px; color: #2d3748; background: #fff;
+  }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: #7c5cbf; }
+  .filter-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+  /* Buttons */
+  .btn { padding: 7px 16px; border-radius: 5px; border: none; cursor: pointer; font-size: 12px; font-weight: 500; transition: all .15s; }
+  .btn-primary { background: #7c5cbf; color: #fff; }
+  .btn-primary:hover { background: #6a4cad; }
+  .btn-secondary { background: #fff; color: #4a5568; border: 1px solid #e2e8f0; }
+  .btn-secondary:hover { background: #f7fafc; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-outline { background: #fff; color: #7c5cbf; border: 1px solid #7c5cbf; }
+  .btn-outline:hover { background: #f5f0ff; }
+  .btn-danger { background: #e53e3e; color: #fff; }
+  .btn-success { background: #38a169; color: #fff; }
+
+  /* Table */
+  .table-wrapper { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { background: #f7f8fc; padding: 7px 8px; text-align: left; font-weight: 600; color: #4a5568; border-bottom: 2px solid #e2e8f0; white-space: normal; font-size: 11px; }
+  tbody tr { border-bottom: 1px solid #f0f2f5; }
+  tbody tr:hover { background: #fafbff; }
+  tbody td { padding: 6px 8px; vertical-align: middle; white-space: nowrap; }
+
+  /* Special rows */
+  .row-paid { background: #f0fff4 !important; }
+  .row-paid td:first-child { border-left: 3px solid #38a169; }
+  .row-locked { background: #fff5f5 !important; }
+  .row-locked td { color: #a0aec0; }
+  .row-ppa-plus { background: #fff0f0 !important; }
+  .row-invoice-sub { background: #fafbff; }
+  .row-invoice-sub td { color: #6b7280; font-size: 11px; padding: 4px 10px 6px; }
+  .row-invoice-sub td:first-child { padding-left: 24px; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 600; }
+  .badge-green { background: #c6f6d5; color: #276749; }
+  .badge-red { background: #fed7d7; color: #9b2c2c; }
+  .badge-yellow { background: #fefcbf; color: #744210; }
+  .badge-gray { background: #e2e8f0; color: #4a5568; }
+  .badge-purple { background: #e9d8fd; color: #553c9a; }
+
+  /* Locked indicator */
+  .locked-row td { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #fafafa 4px, #fafafa 8px) !important; }
+  .lock-icon { color: #e53e3e; margin-right: 4px; }
+
+  /* Invoice sub-section */
+  .invoice-entry { background: #f7f8fc; border-left: 2px solid #7c5cbf; padding: 4px 8px; border-radius: 0 4px 4px 0; font-size: 11px; color: #553c9a; margin: 2px 0; display: flex; align-items: center; gap: 8px; }
+  .invoice-entry .inv-num { font-weight: 600; }
+  .invoice-entry .inv-empty { color: #a0aec0; font-style: italic; }
+
+  /* Send mail button */
+  .btn-mail { background: none; border: 1px solid #bee3f8; color: #2b6cb0; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .btn-mail:hover { background: #ebf8ff; }
+
+  /* Maintenance section */
+  .maintenance-section { border-top: 2px dashed #e2e8f0; padding-top: 20px; margin-top: 4px; }
+  .maintenance-title { font-size: 13px; font-weight: 700; color: #2d3748; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .totals-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 12px; }
+  .total-item { text-align: center; }
+  .total-label { font-size: 10px; color: #718096; margin-bottom: 4px; }
+  .total-value { font-size: 15px; font-weight: 700; color: #2d3748; }
+  .total-value.adjusted { color: #7c5cbf; }
+  .total-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 10px 16px; background: #f7f8fc; border-radius: 6px; }
+  .total-row-label { font-size: 12px; color: #4a5568; width: 100px; font-weight: 600; flex-shrink: 0; }
+  .total-row-values { display: flex; gap: 16px; flex: 1; }
+  .total-cell { text-align: center; min-width: 70px; }
+  .total-cell-label { font-size: 10px; color: #a0aec0; }
+  .total-cell-val { font-size: 13px; font-weight: 600; color: #2d3748; }
+  .adj-input { width: 80px !important; text-align: center; font-weight: 600; color: #7c5cbf; border-color: #d6bcfa !important; }
+  .final-row .total-cell-val { color: #7c5cbf; font-size: 15px; }
+
+  .invoice-form { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin: 14px 0 10px; padding: 14px 16px; background: #faf5ff; border: 1px dashed #d6bcfa; border-radius: 6px; }
+  .invoice-form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+
+  /* Checkbox */
+  input[type=checkbox] { width: 14px; height: 14px; cursor: pointer; accent-color: #7c5cbf; }
+
+  /* Tab nav */
+  .tab-nav { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; gap: 0; }
+  .tab-item { padding: 10px 20px; cursor: pointer; font-size: 13px; font-weight: 500; color: #718096; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+  .tab-item:hover { color: #2d3748; }
+  .tab-item.active { color: #7c5cbf; border-bottom-color: #7c5cbf; font-weight: 700; }
+
+  /* Creator center */
+  .creator-section { margin-bottom: 24px; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #a0aec0; margin-bottom: 12px; }
+  .summary-box { background: #f7f8fc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; display: flex; gap: 32px; }
+  .summary-item { text-align: center; }
+  .summary-item .label { font-size: 11px; color: #718096; margin-bottom: 4px; }
+  .summary-item .value { font-size: 18px; font-weight: 700; color: #2d3748; }
+  .summary-item .value.purple { color: #7c5cbf; }
+
+  /* Export */
+  .export-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .export-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .export-card-title { font-size: 14px; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 8px; }
+  .export-card-desc { font-size: 12px; color: #718096; line-height: 1.5; }
+  .export-card-actions { display: flex; gap: 8px; }
+  .export-icon { font-size: 18px; }
+
+  /* Page tabs */
+  .page-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: #fff; padding: 4px; border-radius: 8px; border: 1px solid #e2e8f0; width: fit-content; }
+  .page-tab { padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #718096; transition: all .15s; }
+  .page-tab.active { background: #7c5cbf; color: #fff; font-weight: 600; }
+  .page-tab:hover:not(.active) { background: #f0f2f5; color: #2d3748; }
+
+  /* Page sections */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+.amount { text-align: right; white-space: nowrap; }
+  .text-muted { color: #a0aec0; }
+  .text-sm { font-size: 11px; }
+  .font-mono { font-family: 'SF Mono', Monaco, monospace; }
+  .w-full { width: 100%; }
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: 8px; }
+  .mt-2 { margin-top: 8px; }
+
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .tag-blue { background: #ebf8ff; color: #2b6cb0; }
+  .tag-orange { background: #fffaf0; color: #c05621; border: 1px solid #fbd38d; }
+
+  /* 財務可填欄位 */
+  .cell-input { width: 100%; font-size: 11px; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px 5px; background: #fff; color: #2d3748; min-width: 40px; }
+  .cell-input:focus { outline: none; border-color: #7c5cbf; box-shadow: 0 0 0 2px rgba(124,92,191,.15); }
+  .cell-input::placeholder { color: #cbd5e0; }
+  .ppa-warning .cell-input { background: #fff5f5; border-color: #feb2b2; }
+  td.editable { padding: 4px 6px; }
+
+  /* 編輯模式 */
+  .btn-edit { border: none; background: none; cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 4px; color: #718096; transition: background .15s; }
+  .btn-edit:hover { background: #ebf8ff; color: #2b6cb0; }
+  .btn-save { border: none; background: #f0fff4; cursor: pointer; font-size: 13px; padding: 4px 10px; border-radius: 4px; color: #276749; font-weight: 600; border: 1px solid #9ae6b4; }
+  .btn-save:hover { background: #c6f6d5; }
+  .editable-cell .edit-input { display: none; }
+  .editable-cell .display-val { display: inline; }
+  tr.editing .editable-cell .display-val { display: none; }
+  tr.editing .editable-cell .edit-input { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">Press<span>Play</span> 後台</div>
+  <div class="sidebar-section">財務</div>
+  <div class="sidebar-item active" onclick="showPage('invoice')">🧾 發票維護</div>
+  <div class="sidebar-item" onclick="showPage('export')">📤 匯出報表</div>
+  <div class="sidebar-section">創作者</div>
+  <div class="sidebar-item" onclick="showPage('creator')">👤 創作者中心</div>
+  <div class="sidebar-section">系統</div>
+  <div class="sidebar-item">⚙️ 設定</div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- ======== PAGE: 發票維護 ======== -->
+  <div class="page-section active" id="page-invoice">
+    <div class="page-header">
+      <div>
+        <div class="page-title">發票維護</div>
+        <div class="breadcrumb">財務 › 發票維護</div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card">
+      <div class="card-header">🔍 篩選條件</div>
+      <div class="card-body">
+        <div class="filter-grid">
+          <div class="form-group">
+            <label>統編 / 身分證 <span style="color:#e53e3e">*</span></label>
+            <input type="text" placeholder="輸入統編或身分證字號" value="54225569">
+          </div>
+          <div class="form-group">
+            <label>課名</label>
+            <input id="filter-course" type="text" placeholder="輸入課程名稱">
+          </div>
+          <div class="form-group">
+            <label>月份</label>
+            <select id="filter-month">
+              <option value="">全部</option>
+              <option value="2024/12">2024/12</option>
+              <option value="2025/01">2025/01</option>
+              <option value="2025/04">2025/04</option>
+              <option value="2025/05">2025/05</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>身分類別</label>
+            <select>
+              <option>全部</option>
+              <option selected>公司</option>
+              <option>個人</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-grid-2">
+          <div class="form-group">
+            <label>是否付款</label>
+            <select id="filter-status">
+              <option value="">全部</option>
+              <option value="paid">已付款</option>
+              <option value="unpaid">未付款</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>付款時間</label>
+            <input id="filter-pay-date" type="text" placeholder="yyyy/mm/dd">
+          </div>
+          <div class="form-group">
+            <label>發票號碼</label>
+            <input id="filter-inv-num" type="text" placeholder="輸入發票號碼">
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-primary w-full" onclick="queryFilter()">查詢</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="card">
+      <div class="card-header">
+        📋 請款明細
+        <span style="margin-left:auto;font-size:11px;font-weight:400;color:#718096">🟢 綠色（已付款）= 財務在下方儲存發票後自動觸發</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrapper">
+          <table id="main-table" style="font-size:11px;table-layout:fixed;width:1500px">
+            <colgroup>
+              <col style="width:30px">    <!-- checkbox -->
+              <col style="width:148px">   <!-- 摘要 -->
+              <col style="width:58px">    <!-- 銷售額A -->
+              <col style="width:60px">    <!-- 負擔成本B -->
+              <col style="width:62px">    <!-- 總銷售額C -->
+              <col style="width:56px">    <!-- 代扣所得G -->
+              <col style="width:56px">    <!-- 代扣健保H -->
+              <col style="width:54px">    <!-- 稅額D -->
+              <col style="width:58px">    <!-- 總額E -->
+              <col style="width:58px">    <!-- 代墊費用F -->
+              <col style="width:62px">    <!-- 支付金額 -->
+              <col style="width:62px">    <!-- 扣住款項 -->
+              <col style="width:105px">   <!-- 扣住款項原因 -->
+              <col style="width:90px">    <!-- 付款時間 -->
+              <col style="width:115px">   <!-- 發票號碼 -->
+              <col style="width:60px">    <!-- 發票銷售額 -->
+              <col style="width:55px">    <!-- 發票稅額 -->
+              <col style="width:55px">    <!-- 發票總額 -->
+              <col style="width:42px">    <!-- 格式 -->
+              <col style="width:72px">    <!-- 發票申報月份 -->
+              <col style="width:64px">    <!-- 未支付銷售額 -->
+              <col style="width:52px">    <!-- 操作 -->
+            </colgroup>
+            <thead>
+              <tr>
+                <th style="position:sticky;left:0;z-index:2;background:#f7f8fc"></th>
+                <th style="position:sticky;left:30px;z-index:2;background:#f7f8fc">摘要</th>
+                <th class="amount">銷售額<br><span class="text-muted">(A)</span></th>
+                <th class="amount">負擔<br>成本(B)</th>
+                <th class="amount">總銷售額<br><span class="text-muted">(C)</span></th>
+                <th class="amount">代扣<br>所得(G)</th>
+                <th class="amount">代扣<br>健保(H)</th>
+                <th class="amount">稅額<br><span class="text-muted">(D)</span></th>
+                <th class="amount">總額<br><span class="text-muted">(E)</span></th>
+                <th class="amount">代墊<br>費用(F)</th>
+                <th class="amount">支付<br>金額</th>
+                <th>扣住款項</th>
+                <th>扣住款項原因</th>
+                <th>付款時間</th>
+                <th>發票號碼</th>
+                <th class="amount">發票<br>銷售額</th>
+                <th class="amount">發票<br>稅額</th>
+                <th class="amount">發票<br>總額</th>
+                <th>格式</th>
+                <th>發票<br>申報月份</th>
+                <th class="amount">未支付<br>銷售額</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1: 已付款，公司（G/H代扣留空，有稅額D） -->
+              <tr class="row-paid" id="row1">
+                <td><input type="checkbox" disabled class="row-cb"></td>
+                <td>
+                  <div style="font-weight:600">2024/12 測試課程</div>
+                  <span class="badge badge-green" style="margin-top:2px">已付款</span>
+                </td>
+                <td class="amount">200</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">200</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount">10</td>
+                <td class="amount">210</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">210</td>
+                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" disabled></td>
+                <td class="editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" placeholder="輸入原因…"></td>
+                <td style="font-weight:600;color:#276749">2025/6/25</td>
+                <td class="font-mono text-sm">AA12345678</td>
+                <td class="amount">200</td>
+                <td class="amount">10</td>
+                <td class="amount">210</td>
+                <td>21</td>
+                <td class="text-sm">07/2025</td>
+                <td class="amount">0</td>
+                <td><button class="btn-edit" onclick="editRow(this)" title="編輯">✏️</button></td>
+              </tr>
+
+              <!-- Row 2: 已付款 + 代墊費用，公司 -->
+              <tr class="row-paid" id="row2">
+                <td><input type="checkbox" disabled class="row-cb"></td>
+                <td>
+                  <div style="font-weight:600">2025/01 測試課程</div>
+                  <span class="badge badge-green" style="margin-top:2px">已付款</span>
+                </td>
+                <td class="amount">200</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">200</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount">10</td>
+                <td class="amount">210</td>
+                <td class="amount editable-cell"><span class="display-val">50</span><input class="cell-input edit-input" style="text-align:right;width:60px;color:#e53e3e" value="50"></td>
+                <td class="amount">160</td>
+                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" disabled></td>
+                <td class="editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" placeholder="輸入原因…"></td>
+                <td style="font-weight:600;color:#276749">2025/6/25</td>
+                <td class="font-mono text-sm">AA12345678</td>
+                <td class="amount">200</td>
+                <td class="amount">10</td>
+                <td class="amount">210</td>
+                <td>21</td>
+                <td class="text-sm">07/2025</td>
+                <td class="amount">0</td>
+                <td><button class="btn-edit" onclick="editRow(this)" title="編輯">✏️</button></td>
+              </tr>
+
+              <!-- Row 3: 未付款，發票不足額，2張發票 -->
+              <tr>
+                <td><input type="checkbox" class="row-cb" onchange="updateInvoiceTotals();loadInvoiceFormData()"></td>
+                <td>2025/04 測試課程</td>
+                <td class="amount">260</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">260</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount">13</td>
+                <td class="amount">273</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">273</td>
+                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" disabled></td>
+                <td class="editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" placeholder="輸入原因…"></td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="amount" style="color:#e53e3e;font-weight:700">260</td>
+                <td><button class="btn-edit" onclick="editRow(this)" title="編輯">✏️</button></td>
+              </tr>
+              <!-- Row 3 sub: 第2張發票（空，可新增） -->
+              <tr class="row-invoice-sub">
+                <td colspan="2"></td>
+                <td colspan="9" style="color:#a0aec0">— 第2張發票 —</td>
+                <td colspan="2"></td><!-- 扣住款項 + 扣住款項原因 -->
+                <td colspan="1"></td><!-- 付款時間 -->
+                <td colspan="1">
+                  <div class="invoice-entry" style="border-left-color:#e2e8f0;background:#f0f0f0;color:#a0aec0;font-style:italic">+ 新增</div>
+                </td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td></td>
+                <td></td>
+              </tr>
+
+              <!-- Row 4: 扣住款項，欄位反灰 -->
+              <tr class="locked-row">
+                <td><input type="checkbox" disabled></td>
+                <td>
+                  <div>2025/05 測試課程</div>
+                  <div style="margin-top:3px;display:flex;align-items:center;gap:4px">
+                    <span class="lock-icon">🔒</span>
+                    <span class="badge badge-red">扣住：未更新文章</span>
+                  </div>
+                </td>
+                <td class="amount text-muted">100</td>
+                <td class="amount editable-cell"><span class="display-val text-muted">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount text-muted">100</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">5</td>
+                <td class="amount text-muted">105</td>
+                <td class="amount editable-cell"><span class="display-val text-muted">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount text-muted">105</td>
+                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" checked disabled></td>
+                <td class="editable-cell"><span class="display-val" style="color:#9b2c2c">未更新文章</span><input class="cell-input edit-input" value="未更新文章" placeholder="輸入原因…"></td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="amount text-muted">100</td>
+                <td><button class="btn-edit" onclick="editRow(this)" title="編輯">✏️</button></td>
+              </tr>
+
+              <!-- Row 5: PPA+ -->
+              <tr>
+                <td><input type="checkbox" class="row-cb" onchange="updateInvoiceTotals();loadInvoiceFormData()"></td>
+                <td>
+                  <div>2025/05 PPA+ 課程</div>
+                  <span class="badge badge-purple" style="margin-top:2px">Plus</span>
+                </td>
+                <td class="amount">500</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">500</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount">25</td>
+                <td class="amount">525</td>
+                <td class="amount editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
+                <td class="amount">525</td>
+                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" disabled></td>
+                <td class="editable-cell"><span class="display-val">—</span><input class="cell-input edit-input" placeholder="輸入原因…"></td>
+                <td class="text-muted">—</td>
+                <td class="text-muted font-mono text-sm">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="amount text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="text-muted">—</td>
+                <td class="amount">500</td>
+                <td><button class="btn-edit" onclick="editRow(this)" title="編輯">✏️</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Rule Notice -->
+    <div style="background:#fffbeb;border:1px solid #f6e05e;border-radius:6px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:#744210;display:flex;gap:12px;align-items:center">
+      <span style="font-size:16px">⏰</span>
+      <div>
+        <strong>付款時機規則（公司）：</strong>
+        1–15 號收到發票 → <strong>本月 25 日</strong>付款 ／
+        16–31 號收到發票 → <strong>次月 10 日</strong>付款
+        （遇假日均延後）
+      </div>
+    </div>
+
+    <!-- Invoice Maintenance -->
+    <div class="card">
+      <div class="card-header">🧮 發票維護（已勾選項目）</div>
+      <div class="card-body">
+        <!-- 三列：小計、調整數、開立金額 -->
+        <div style="overflow-x:auto">
+          <table style="width:100%;max-width:700px;font-size:12px;border-collapse:collapse">
+            <thead>
+              <tr>
+                <th style="width:120px;text-align:left;padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#718096;font-size:11px"></th>
+                <th style="padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#4a5568;font-size:11px;text-align:right">總銷售額</th>
+                <th style="padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#4a5568;font-size:11px;text-align:right">總稅額</th>
+                <th style="padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#4a5568;font-size:11px;text-align:right">總額</th>
+                <th style="padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#4a5568;font-size:11px;text-align:right">代扣繳所得稅</th>
+                <th style="padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#4a5568;font-size:11px;text-align:right">代扣二代健保</th>
+                <th style="padding:6px 12px;background:#f7f8fc;border:1px solid #e2e8f0;color:#4a5568;font-size:11px;text-align:right">支付金額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="row-subtotal">
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#4a5568;background:#fafbff">小計 (M)</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;font-weight:600" id="sub-sales">400</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;font-weight:600" id="sub-tax">20</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;font-weight:600" id="sub-total">420</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;color:#a0aec0" id="sub-withhold">—</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;color:#a0aec0" id="sub-health">—</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;font-weight:600" id="sub-payment">370</td>
+              </tr>
+              <tr id="row-adjustment">
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#7c5cbf;background:#faf5ff">調整數 (N)</td>
+                <td style="padding:4px 8px;border:1px solid #e2e8f0;text-align:right"><input id="adj-sales" type="text" value="+1" oninput="recalcInvoiceAmount()" style="width:60px;text-align:right;border:1px solid #d6bcfa;border-radius:4px;padding:3px 6px;color:#7c5cbf;font-weight:600"></td>
+                <td style="padding:4px 8px;border:1px solid #e2e8f0;text-align:right"><input id="adj-tax" type="text" value="-1" oninput="recalcInvoiceAmount()" style="width:60px;text-align:right;border:1px solid #d6bcfa;border-radius:4px;padding:3px 6px;color:#7c5cbf;font-weight:600"></td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;color:#a0aec0">—</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;color:#a0aec0">—</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;color:#a0aec0">—</td>
+                <td style="padding:8px 12px;border:1px solid #e2e8f0;text-align:right;color:#a0aec0">—</td>
+              </tr>
+              <tr id="row-invoice-total" style="background:#faf5ff">
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;font-weight:700;color:#553c9a">開立發票金額</td>
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;text-align:right;font-weight:700;color:#7c5cbf;font-size:14px" id="inv-sales">401</td>
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;text-align:right;font-weight:700;color:#7c5cbf;font-size:14px" id="inv-tax">19</td>
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;text-align:right;font-weight:700;color:#7c5cbf;font-size:14px" id="inv-total">420</td>
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;text-align:right;color:#a0aec0" id="inv-withhold">—</td>
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;text-align:right;color:#a0aec0" id="inv-health">—</td>
+                <td style="padding:8px 12px;border:1px solid #d6bcfa;text-align:right;font-weight:700;color:#7c5cbf;font-size:14px" id="inv-payment">370</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Invoice form -->
+        <div class="invoice-form" style="margin-top:16px">
+          <div class="form-group">
+            <label>發票日期</label>
+            <input id="form-inv-date" type="text" placeholder="yyyy/mm/dd">
+          </div>
+          <div class="form-group">
+            <label>發票字軌</label>
+            <input id="form-inv-prefix" type="text" placeholder="AA">
+          </div>
+          <div class="form-group">
+            <label>發票號碼</label>
+            <input id="form-inv-num" type="text" placeholder="12345678">
+          </div>
+          <div class="form-group">
+            <label>統一編號</label>
+            <input id="form-inv-uid" type="text" placeholder="54225569">
+          </div>
+          <div class="form-group">
+            <label>格式</label>
+            <select id="form-inv-format"><option value="21">21</option><option value="25">25</option></select>
+          </div>
+          <div class="form-group">
+            <label>付款時間 <span class="tag tag-blue">預設可改</span></label>
+            <input id="form-pay-date" type="text" placeholder="yyyy/mm/dd">
+          </div>
+          <div class="form-group">
+            <label>發票申報月份 <span class="tag tag-blue">預設可改</span></label>
+            <input id="form-inv-month" type="text" placeholder="mm/yyyy">
+          </div>
+          <div class="form-group">
+            <label>發票狀態</label>
+            <select id="form-inv-status">
+              <option value="active" selected>active</option>
+              <option value="cancel">cancel</option>
+            </select>
+          </div>
+        </div>
+        <div class="invoice-form-actions">
+          <button class="btn btn-secondary">取消</button>
+          <!-- 退回按鈕：僅已儲存過的發票才顯示 -->
+          <button id="btn-return-invoice" class="btn btn-danger btn-sm" style="margin-right:auto" onclick="returnInvoice()" title="退回：請款明細回白色，發票資訊清除">↩ 退回</button>
+          <button class="btn btn-primary" onclick="saveInvoice()">儲存</button>
+        </div>
+        <div id="return-note" style="font-size:11px;color:#a0aec0;margin-top:8px">「退回」按鈕於發票首次儲存後顯示，點擊後：請款明細恢復白色、發票資訊清除</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== PAGE: 創作者中心 ======== -->
+  <div class="page-section" id="page-creator">
+    <div class="page-header">
+      <div>
+        <div class="page-title">創作者中心</div>
+        <div class="breadcrumb">創作者 › 請款明細查詢</div>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <div class="tab-item active" onclick="switchTab(this,'tab-paid')">已請款明細</div>
+      <div class="tab-item" onclick="switchTab(this,'tab-unpaid')">未請款明細</div>
+    </div>
+
+    <!-- 已請款明細 -->
+    <div id="tab-paid">
+      <!-- 公司 -->
+      <div class="creator-section">
+        <div class="section-label">公司</div>
+        <div class="card">
+          <div class="card-body">
+            <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
+              <div class="form-group">
+                <label>統編 / 身分證</label>
+                <input type="text" value="54225569" readonly style="background:#f7f8fc">
+              </div>
+              <div class="form-group">
+                <label>付款時間</label>
+                <input type="text" placeholder="yyyy/mm/dd">
+              </div>
+              <div class="form-group">
+                <label>發票號碼</label>
+                <input type="text" placeholder="輸入發票號碼">
+              </div>
+            </div>
+            <div style="margin-top:12px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>發票號碼</th>
+                    <th>發票日期</th>
+                    <th class="amount">總銷售額</th>
+                    <th class="amount">總稅額</th>
+                    <th class="amount">總額</th>
+                    <th>格式</th>
+                    <th>付款時間</th>
+                    <th>摘要</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-mono">AA12345678</td>
+                    <td>6/10/2025</td>
+                    <td class="amount">401</td>
+                    <td class="amount">19</td>
+                    <td class="amount" style="font-weight:700">420</td>
+                    <td>21</td>
+                    <td>2025/6/25</td>
+                    <td class="text-sm" style="color:#4a5568">2024/12 測試課程<br>2025/01 測試課程</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr style="background:#f7f8fc;font-weight:700">
+                    <td colspan="2" style="padding:8px 10px;color:#4a5568">已開立發票金額合計</td>
+                    <td class="amount" style="padding:8px 10px">401</td>
+                    <td class="amount" style="padding:8px 10px">19</td>
+                    <td class="amount" style="padding:8px 10px;color:#7c5cbf">420</td>
+                    <td colspan="3"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 個人 -->
+      <div class="creator-section">
+        <div class="section-label">個人</div>
+        <div class="card">
+          <div class="card-body">
+            <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
+              <div class="form-group">
+                <label>統編 / 身分證</label>
+                <input type="text" value="A123456789" readonly style="background:#f7f8fc">
+              </div>
+              <div class="form-group">
+                <label>付款時間</label>
+                <input type="text" placeholder="yyyy/mm/dd">
+              </div>
+              <div class="form-group">
+                <label>發票號碼</label>
+                <input type="text" placeholder="輸入發票號碼">
+              </div>
+            </div>
+            <div style="margin-top:12px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>摘要</th>
+                    <th class="amount">銷售額(A)</th>
+                    <th class="amount">負擔成本(B)</th>
+                    <th class="amount">總銷售額(C)</th>
+                    <th class="amount">代扣所得(G)</th>
+                    <th class="amount">代扣健保(H)</th>
+                    <th class="amount">總額(E)</th>
+                    <th class="amount">代墊費用(F)</th>
+                    <th class="amount">支付金額</th>
+                    <th>付款時間</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2024/12 測試課程</td>
+                    <td class="amount">200</td><td class="amount text-muted">—</td>
+                    <td class="amount">200</td><td class="amount text-muted">—</td><td class="amount text-muted">—</td>
+                    <td class="amount">200</td><td class="amount text-muted">—</td>
+                    <td class="amount" style="font-weight:700">200</td>
+                    <td>2025/6/25</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 未請款明細 -->
+    <div id="tab-unpaid" style="display:none">
+      <!-- 篩選 -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-body">
+          <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="form-group">
+              <label>統編 / 身分證</label>
+              <input type="text" value="54225569" readonly style="background:#f7f8fc">
+            </div>
+            <div class="form-group">
+              <label>課名</label>
+              <select><option>全部課程</option><option>測試課程</option></select>
+            </div>
+            <div class="form-group">
+              <label>月份</label>
+              <select><option>全部</option><option>2025/02</option><option>2025/03</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 公司 -->
+      <div class="creator-section">
+        <div class="section-label">公司</div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <table>
+              <thead>
+                <tr>
+                  <th>摘要</th>
+                  <th class="amount">銷售額(A)</th>
+                  <th class="amount">負擔成本(B)</th>
+                  <th class="amount">總銷售額(C)</th>
+                  <th class="amount">稅額(D)</th>
+                  <th class="amount">總額(E)</th>
+                  <th class="amount">代墊費用(F)</th>
+                  <th class="amount">支付金額</th>
+                  <th>扣住款項</th>
+                  <th>扣住原因</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="locked-row">
+                  <td>2025/02 測試課程<div><span class="badge badge-red" style="margin-top:2px">🔒</span></div></td>
+                  <td class="amount text-muted">100</td><td class="amount text-muted">—</td>
+                  <td class="amount text-muted">100</td><td class="amount text-muted">5</td>
+                  <td class="amount text-muted">95</td><td class="amount text-muted">—</td>
+                  <td class="amount text-muted">95</td><td>☑</td><td class="text-sm" style="color:#e53e3e">未更新文章</td>
+                </tr>
+                <tr>
+                  <td>2025/03 測試課程</td>
+                  <td class="amount">500</td><td class="amount text-muted">—</td>
+                  <td class="amount">500</td><td class="amount">25</td>
+                  <td class="amount">475</td><td class="amount text-muted">—</td>
+                  <td class="amount">475</td><td></td><td></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style="background:#f7f8fc;font-weight:700">
+                  <td style="padding:8px 10px;color:#4a5568">未付款總額（排除扣住）</td>
+                  <td class="amount" style="padding:8px 10px">500</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
+                  <td class="amount" style="padding:8px 10px">500</td><td class="amount" style="padding:8px 10px">25</td>
+                  <td class="amount" style="padding:8px 10px">475</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
+                  <td class="amount" style="padding:8px 10px;color:#7c5cbf">475</td><td colspan="2"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 個人 -->
+      <div class="creator-section">
+        <div class="section-label">個人</div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <table>
+              <thead>
+                <tr>
+                  <th>摘要</th>
+                  <th class="amount">銷售額(A)</th>
+                  <th class="amount">負擔成本(B)</th>
+                  <th class="amount">總銷售額(C)</th>
+                  <th class="amount">代扣所得(G)</th>
+                  <th class="amount">代扣健保(H)</th>
+                  <th class="amount">總額(E)</th>
+                  <th class="amount">代墊費用(F)</th>
+                  <th class="amount">支付金額</th>
+                  <th>扣住款項</th>
+                  <th>扣住原因</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="locked-row">
+                  <td>2025/02 測試課程<div><span class="badge badge-red" style="margin-top:2px">🔒</span></div></td>
+                  <td class="amount text-muted">100</td><td class="amount text-muted">—</td>
+                  <td class="amount text-muted">100</td><td class="amount text-muted">—</td><td class="amount text-muted">—</td>
+                  <td class="amount text-muted">95</td><td class="amount text-muted">—</td>
+                  <td class="amount text-muted">95</td><td>☑</td><td class="text-sm" style="color:#e53e3e">未更新文章</td>
+                </tr>
+                <tr>
+                  <td>2025/03 測試課程</td>
+                  <td class="amount">500</td><td class="amount text-muted">—</td>
+                  <td class="amount">500</td><td class="amount text-muted">—</td><td class="amount text-muted">—</td>
+                  <td class="amount">475</td><td class="amount text-muted">—</td>
+                  <td class="amount">475</td><td></td><td></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style="background:#f7f8fc;font-weight:700">
+                  <td style="padding:8px 10px;color:#4a5568">未付款總額（排除扣住）</td>
+                  <td class="amount" style="padding:8px 10px">500</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
+                  <td class="amount" style="padding:8px 10px">500</td>
+                  <td class="amount" style="padding:8px 10px;color:#a0aec0">—</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
+                  <td class="amount" style="padding:8px 10px">475</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
+                  <td class="amount" style="padding:8px 10px;color:#7c5cbf">475</td><td colspan="2"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== PAGE: 匯出報表 ======== -->
+  <div class="page-section" id="page-export">
+    <div class="page-header">
+      <div>
+        <div class="page-title">匯出報表</div>
+        <div class="breadcrumb">財務 › 匯出報表</div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:400px;margin-bottom:20px">
+      <div class="card-header">📅 付款日期</div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>選擇付款日期</label>
+          <input type="text" value="2025/06/25" style="max-width:200px">
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#718096">依此日期篩選，資料排列依發票 key 入時間順序</div>
+      </div>
+    </div>
+
+    <div class="export-grid">
+      <div class="export-card">
+        <div class="export-card-title"><span class="export-icon">📄</span> 財務系統匯入格式</div>
+        <div class="export-card-desc">
+          公司專用。每 100 筆產生一個檔案，含傳票類別、科目編號、分析編號等財務系統欄位。
+        </div>
+        <div class="export-card-actions">
+          <span class="badge badge-purple">公司</span>
+          <button class="btn btn-primary btn-sm" style="margin-left:auto">下載</button>
+        </div>
+      </div>
+
+      <div class="export-card">
+        <div class="export-card-title"><span class="export-icon">🏦</span> 國泰銀行付款匯入</div>
+        <div class="export-card-desc">
+          加總同一統一編號在指定付款日的金額，輸出收款行代碼、帳號、戶名等欄位。
+        </div>
+        <div class="export-card-actions">
+          <span class="badge badge-purple">公司</span>
+          <span class="badge badge-gray">個人</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
+          <button class="btn btn-secondary btn-sm">個人</button>
+        </div>
+      </div>
+
+      <div class="export-card">
+        <div class="export-card-title"><span class="export-icon">📊</span> 付款報表</div>
+        <div class="export-card-desc">
+          資料來源 finance。<br>
+          <strong>公司：</strong>排序編號、分析編號、銷售額(A/B/C/D/E/F/G)、發票資訊、銀行代碼/帳號/戶名<br>
+          <strong>個人：</strong>所得、代扣繳所得稅、代扣二代健保、訂閱淨所得(A)、負擔成本(B)、代墊費用(C)、支付金額(D=A+B+C)、銀行代碼/帳號/戶名/戶籍地址
+        </div>
+        <div class="export-card-actions">
+          <span class="badge badge-purple">公司</span>
+          <span class="badge badge-gray">個人</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
+          <button class="btn btn-secondary btn-sm">個人</button>
+        </div>
+      </div>
+
+      <div class="export-card">
+        <div class="export-card-title"><span class="export-icon">📋</span> 沖帳傳票</div>
+        <div class="export-card-desc">
+          複式傳票格式，含科目編號、借貸方向、分析編號。個人另含代收稅款及補充保費分錄。
+        </div>
+        <div class="export-card-actions">
+          <span class="badge badge-purple">公司</span>
+          <span class="badge badge-gray">個人</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
+          <button class="btn btn-secondary btn-sm">個人</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+function showPage(name) {
+  document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function editRow(btn) {
+  const row = btn.closest('tr');
+  const isEditing = row.classList.contains('editing');
+  if (isEditing) {
+    row.querySelectorAll('.editable-cell').forEach(cell => {
+      const input = cell.querySelector('.edit-input');
+      const span = cell.querySelector('.display-val');
+      if (input && span) span.textContent = input.value.trim() || '—';
+      const cb = cell.querySelector('input[type=checkbox].ec-cb');
+      if (cb) cb.disabled = true;
+    });
+    row.classList.remove('editing');
+    btn.className = 'btn-edit';
+    btn.textContent = '✏️';
+    btn.title = '編輯';
+  } else {
+    row.querySelectorAll('.editable-cell').forEach(cell => {
+      const input = cell.querySelector('.edit-input');
+      const span = cell.querySelector('.display-val');
+      if (input && span) input.value = span.textContent === '—' ? '' : span.textContent;
+      const cb = cell.querySelector('input[type=checkbox].ec-cb');
+      if (cb) cb.disabled = false;
+    });
+    row.classList.add('editing');
+    btn.className = 'btn-save';
+    btn.textContent = '💾 儲存';
+    btn.title = '儲存';
+  }
+}
+
+function returnInvoice() {
+  // 退回目前可見的已付款 row（查詢後只退回篩選到的）
+  let affected = 0;
+  document.querySelectorAll('#main-table tbody tr.row-paid').forEach(row => {
+    if (row.style.display === 'none') return;
+    affected++;
+    const cells = row.querySelectorAll('td');
+    row.classList.remove('row-paid');
+    const badge = cells[1].querySelector('.badge-green');
+    if (badge) badge.remove();
+    // 退回後恢復 checkbox 可勾選
+    const cb = cells[0].querySelector('input[type=checkbox]');
+    if (cb) {
+      cb.disabled = false;
+      cb.checked = false;
+      cb.setAttribute('onchange', 'updateInvoiceTotals();loadInvoiceFormData()');
+    }
+    // 清空付款時間 (index 13)
+    cells[13].textContent = '—';
+    cells[13].removeAttribute('style');
+    // 清空發票欄位 (index 14–19)
+    for (let i = 14; i <= 19; i++) {
+      cells[i].textContent = '—';
+      cells[i].className = 'text-muted';
+    }
+    // 未支付銷售額 (index 20) 恢復為 總銷售額C (index 4)
+    const salesAmt = cells[4].textContent.trim();
+    cells[20].textContent = salesAmt;
+    cells[20].style.color = '#e53e3e';
+    cells[20].style.fontWeight = '700';
+  });
+  if (affected === 0) return;
+  // 隱藏退回按鈕
+  const btn = document.getElementById('btn-return-invoice');
+  if (btn) btn.style.display = 'none';
+  // 備註
+  const note = document.getElementById('return-note');
+  if (note) {
+    note.textContent = '✓ 已退回：請款明細已恢復白色，發票資訊已清除';
+    note.style.color = '#276749';
+    note.style.fontWeight = '600';
+  }
+  // 重新計算小計 + 清空表單
+  updateInvoiceTotals();
+  loadInvoiceFormData();
+}
+
+function updateInvoiceTotals() {
+  let sales = 0, tax = 0, total = 0, withhold = 0, health = 0, payment = 0;
+  // 判斷是否有勾選的白色 row（新建發票模式）
+  const hasCheckedWhite = !!document.querySelector(
+    '#main-table tbody tr:not(.row-paid) td:first-child input.row-cb:checked'
+  );
+  document.querySelectorAll('#main-table tbody tr').forEach(row => {
+    if (row.style.display === 'none') return;
+    const cells = row.querySelectorAll('td');
+    if (cells.length < 22) return;
+    // 有勾選白色 row → 只計算勾選的白色 row；否則計算可見的已付款 row
+    if (hasCheckedWhite) {
+      const cb = cells[0].querySelector('input[type=checkbox]');
+      if (!cb || !cb.checked || cb.disabled) return;
+    } else {
+      if (!row.classList.contains('row-paid')) return;
+    }
+    const n = el => {
+      const src = el.querySelector('.display-val') || el;
+      const v = parseFloat((src.textContent || '').replace(/[^0-9.]/g, ''));
+      return isNaN(v) ? 0 : v;
+    };
+    sales   += n(cells[4]);   // 總銷售額C
+    tax     += n(cells[7]);   // 稅額D
+    total   += n(cells[8]);   // 總額E
+    withhold+= n(cells[5]);   // 代扣所得G
+    health  += n(cells[6]);   // 代扣健保H
+    payment += n(cells[10]);  // 支付金額
+  });
+  const fmt = v => v ? v.toLocaleString() : '—';
+  document.getElementById('sub-sales').textContent   = fmt(sales);
+  document.getElementById('sub-tax').textContent     = fmt(tax);
+  document.getElementById('sub-total').textContent   = fmt(total);
+  document.getElementById('sub-withhold').textContent= fmt(withhold);
+  document.getElementById('sub-health').textContent  = fmt(health);
+  document.getElementById('sub-payment').textContent = fmt(payment);
+  recalcInvoiceAmount();
+}
+
+function recalcInvoiceAmount() {
+  const num = id => parseFloat((document.getElementById(id)?.textContent || '').replace(/[^0-9.-]/g,'')) || 0;
+  const adjSales = parseFloat(document.getElementById('adj-sales')?.value) || 0;
+  const adjTax   = parseFloat(document.getElementById('adj-tax')?.value)   || 0;
+  const s = num('sub-sales')  + adjSales;
+  const t = num('sub-tax')    + adjTax;
+  const fmt = v => v ? v.toLocaleString() : '—';
+  document.getElementById('inv-sales').textContent   = fmt(s);
+  document.getElementById('inv-tax').textContent     = fmt(t);
+  document.getElementById('inv-total').textContent   = fmt(s + t || 0) || '—';
+  document.getElementById('inv-withhold').textContent= document.getElementById('sub-withhold').textContent;
+  document.getElementById('inv-health').textContent  = document.getElementById('sub-health').textContent;
+  document.getElementById('inv-payment').textContent = document.getElementById('sub-payment').textContent;
+}
+
+function switchTab(el, tabId) {
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-paid').style.display = 'none';
+  document.getElementById('tab-unpaid').style.display = 'none';
+  document.getElementById(tabId).style.display = 'block';
+}
+
+function loadInvoiceFormData() {
+  let paidRow = null;
+  let whiteRow = null;
+
+  document.querySelectorAll('#main-table tbody tr').forEach(row => {
+    if (row.style.display === 'none') return;
+    const cells = row.querySelectorAll('td');
+    if (cells.length < 22) return;
+
+    if (row.classList.contains('row-paid')) {
+      paidRow = row;  // 已付款：直接用可見 row，不需要勾選
+    } else {
+      const cb = cells[0].querySelector('input[type=checkbox]');
+      if (cb && cb.checked && !cb.disabled && !whiteRow) {
+        whiteRow = row;  // 白色 row 仍需勾選才帶入
+      }
+    }
+  });
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = (val === '—' || !val) ? '' : val;
+  };
+
+  if (paidRow) {
+    // 已付款 row：帶入儲存的發票資料
+    const cells = paidRow.querySelectorAll('td');
+    const invFull = cells[14].textContent.trim();
+    const prefix  = invFull.replace(/\d/g, '').substring(0, 2);
+    const num     = invFull.replace(/\D/g, '');
+    const payDate = cells[13].textContent.trim();
+    const format  = cells[18].textContent.trim();
+    const month   = cells[19].textContent.trim();
+
+    setVal('form-inv-prefix', prefix);
+    setVal('form-inv-num', num);
+    setVal('form-pay-date', payDate);
+    setVal('form-inv-month', month);
+
+    const fmtSel = document.getElementById('form-inv-format');
+    if (fmtSel) {
+      for (const opt of fmtSel.options) {
+        if (opt.value === format) { opt.selected = true; break; }
+      }
+    }
+    const statusSel = document.getElementById('form-inv-status');
+    if (statusSel) statusSel.value = 'active';
+
+  } else if (whiteRow) {
+    // 白色 row：清空發票號碼，預設付款時間 = 以當下日期隔月25，申報月份 = 隔月
+    setVal('form-inv-prefix', '');
+    setVal('form-inv-num', '');
+    setVal('form-inv-date', '');
+
+    const now   = new Date();
+    const nMon  = now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2; // 0-based +1 (current) +1 (next)
+    const nYear = now.getMonth() + 2 > 12 ? now.getFullYear() + 1 : now.getFullYear();
+    setVal('form-pay-date', `${nYear}/${nMon}/25`);
+    setVal('form-inv-month', `${String(nMon).padStart(2, '0')}/${nYear}`);
+
+  } else {
+    // 沒有勾選任何 row → 清空全部
+    ['form-inv-date','form-inv-prefix','form-inv-num','form-inv-uid',
+     'form-pay-date','form-inv-month'].forEach(id => setVal(id, ''));
+    const fmtSel = document.getElementById('form-inv-format');
+    if (fmtSel) fmtSel.selectedIndex = 0;
+  }
+}
+
+function saveInvoice() {
+  const prefix  = (document.getElementById('form-inv-prefix')?.value || '').trim();
+  const num     = (document.getElementById('form-inv-num')?.value || '').trim();
+  const format  = document.getElementById('form-inv-format')?.value || '21';
+  const payDate = (document.getElementById('form-pay-date')?.value || '').trim();
+  const month   = (document.getElementById('form-inv-month')?.value || '').trim();
+
+  if (!num) { alert('請填入發票號碼'); return; }
+
+  const invFull = prefix + num;
+
+  // 目標：勾選中的白色 row（新建），或可見的已付款 row（更新）
+  const hasCheckedWhite = !!document.querySelector(
+    '#main-table tbody tr:not(.row-paid) td:first-child input.row-cb:checked'
+  );
+  const targets = [];
+  document.querySelectorAll('#main-table tbody tr').forEach(row => {
+    if (row.style.display === 'none') return;
+    const cells = row.querySelectorAll('td');
+    if (cells.length < 22) return;
+    if (hasCheckedWhite) {
+      const cb = cells[0].querySelector('input[type=checkbox]');
+      if (cb && cb.checked && !cb.disabled) targets.push(row);
+    } else {
+      if (row.classList.contains('row-paid')) targets.push(row);
+    }
+  });
+
+  if (targets.length === 0) { alert('請先勾選要開立發票的明細'); return; }
+
+  targets.forEach(row => {
+    const cells = row.querySelectorAll('td');
+
+    // 付款時間 (13)
+    cells[13].textContent = payDate;
+    cells[13].style.fontWeight = '600';
+    cells[13].style.color = '#276749';
+
+    // 發票號碼 (14)
+    cells[14].textContent = invFull;
+    cells[14].className = 'font-mono text-sm';
+
+    // 發票銷售額/稅額/總額 (15–17)：寫各自 row 的金額
+    const getNum = td => {
+      const s = (td.querySelector('.display-val') || td).textContent.trim();
+      return s === '—' ? '—' : s;
+    };
+    cells[15].textContent = getNum(cells[4]);  // 總銷售額C
+    cells[15].className = 'amount';
+    cells[16].textContent = getNum(cells[7]);  // 稅額D
+    cells[16].className = 'amount';
+    cells[17].textContent = getNum(cells[8]);  // 總額E
+    cells[17].className = 'amount';
+
+    // 格式 (18)
+    cells[18].textContent = format;
+    cells[18].className = '';
+
+    // 申報月份 (19)
+    cells[19].textContent = month;
+    cells[19].className = 'text-sm';
+
+    // 未支付 (20) → 0
+    cells[20].textContent = '0';
+    cells[20].style.color = '';
+    cells[20].style.fontWeight = '';
+
+    // 若原本是白色 → 變綠（已付款），停用 checkbox
+    if (!row.classList.contains('row-paid')) {
+      row.classList.add('row-paid');
+      if (!cells[1].querySelector('.badge-green')) {
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-green';
+        badge.style.marginTop = '2px';
+        badge.textContent = '已付款';
+        cells[1].appendChild(badge);
+      }
+      const cb = cells[0].querySelector('input[type=checkbox]');
+      if (cb) { cb.checked = false; cb.disabled = true; cb.removeAttribute('onchange'); }
+    }
+  });
+
+  // 顯示退回按鈕
+  const btnReturn = document.getElementById('btn-return-invoice');
+  if (btnReturn) btnReturn.style.display = '';
+
+  const note = document.getElementById('return-note');
+  if (note) {
+    note.textContent = `✓ 已儲存：${targets.length} 筆明細已更新發票資訊（${invFull}）`;
+    note.style.color = '#276749';
+    note.style.fontWeight = '600';
+  }
+
+  updateInvoiceTotals();
+}
+
+function queryFilter() {
+  const month   = document.getElementById('filter-month')?.value || '';
+  const status  = document.getElementById('filter-status')?.value || '';
+  const payDate = (document.getElementById('filter-pay-date')?.value || '').trim();
+  const invNum  = (document.getElementById('filter-inv-num')?.value || '').trim();
+  const course  = (document.getElementById('filter-course')?.value || '').trim();
+
+  let lastMainVisible = true;
+
+  document.querySelectorAll('#main-table tbody tr').forEach(row => {
+    if (row.classList.contains('row-invoice-sub')) {
+      row.style.display = lastMainVisible ? '' : 'none';
+      return;
+    }
+
+    const cells = row.querySelectorAll('td');
+    if (cells.length < 22) { row.style.display = lastMainVisible ? '' : 'none'; return; }
+
+    const summary = cells[1].textContent.trim();
+    const rowMonth = summary.match(/^(\d{4}\/\d{2})/)?.[1] || '';
+    const isPaid   = row.classList.contains('row-paid');
+    const cellPayDate = cells[13].textContent.trim();
+    const cellInvNum  = cells[14].textContent.trim();
+
+    let visible = true;
+    if (month   && rowMonth !== month)                                           visible = false;
+    if (status === 'paid'   && !isPaid)                                          visible = false;
+    if (status === 'unpaid' && isPaid)                                           visible = false;
+    if (payDate && !cellPayDate.includes(payDate))                               visible = false;
+    if (invNum  && !cellInvNum.toLowerCase().includes(invNum.toLowerCase()))     visible = false;
+    if (course  && !summary.includes(course))                                    visible = false;
+
+    row.style.display = visible ? '' : 'none';
+    lastMainVisible = visible;
+  });
+
+  // 查詢後：若有可見的已付款 row，自動帶入發票資料
+  loadInvoiceFormData();
+  // 顯示退回按鈕（若有可見的已付款 row）
+  const hasVisiblePaid = !!document.querySelector('#main-table tbody tr.row-paid:not([style*="none"])');
+  const btn = document.getElementById('btn-return-invoice');
+  if (btn) btn.style.display = hasVisiblePaid ? '' : 'none';
+}
+
+// row-cb 已直接用 onchange 觸發，這裡保留 header checkbox 的全選邏輯（預留）
+
+// 頁面載入時初始化
+updateInvoiceTotals();
+loadInvoiceFormData();
+</script>
+</body>
+</html>
