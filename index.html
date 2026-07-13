@@ -86,7 +86,7 @@
   .badge-purple { background: #e9d8fd; color: #553c9a; }
 
   /* Locked indicator */
-  .locked-row td { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #fafafa 4px, #fafafa 8px) !important; }
+  .locked-row td:first-child { border-left: 3px solid #e53e3e; }
   .lock-icon { color: #e53e3e; margin-right: 4px; }
 
   /* Invoice sub-section */
@@ -427,9 +427,9 @@
                 <td></td>
               </tr>
 
-              <!-- Row 4: 扣住款項，欄位反灰 -->
+              <!-- Row 4: 扣住款項（標籤標記，欄位不反灰，checkbox 可正常勾選） -->
               <tr class="locked-row">
-                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" class="row-cb" onchange="updateInvoiceTotals();loadInvoiceFormData()"></td>
                 <td>
                   <div>2025/05 測試課程</div>
                   <div style="margin-top:3px;display:flex;align-items:center;gap:4px">
@@ -446,7 +446,7 @@
                 <td class="amount text-muted">105</td>
                 <td class="amount editable-cell"><span class="display-val text-muted">—</span><input class="cell-input edit-input" style="text-align:right;width:60px" placeholder="0"></td>
                 <td class="amount text-muted">105</td>
-                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" checked disabled></td>
+                <td class="editable-cell" style="text-align:center"><input type="checkbox" class="ec-cb" checked></td>
                 <td class="editable-cell"><span class="display-val" style="color:#9b2c2c">未更新文章</span><input class="cell-input edit-input" value="未更新文章" placeholder="輸入原因…"></td>
                 <td class="text-muted">—</td>
                 <td class="text-muted">—</td>
