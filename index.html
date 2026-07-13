@@ -187,8 +187,6 @@
   <div class="sidebar-section">財務</div>
   <div class="sidebar-item active" onclick="showPage('invoice')">🧾 發票維護</div>
   <div class="sidebar-item" onclick="showPage('export')">📤 匯出報表</div>
-  <div class="sidebar-section">創作者</div>
-  <div class="sidebar-item" onclick="showPage('creator')">👤 創作者中心</div>
   <div class="sidebar-section">系統</div>
   <div class="sidebar-item">⚙️ 設定</div>
 </div>
@@ -607,259 +605,8 @@
     </div>
   </div>
 
-  <!-- ======== PAGE: 創作者中心 ======== -->
-  <div class="page-section" id="page-creator">
-    <div class="page-header">
-      <div>
-        <div class="page-title">創作者中心</div>
-        <div class="breadcrumb">創作者 › 請款明細查詢</div>
-      </div>
-    </div>
-
-    <div class="tab-nav">
-      <div class="tab-item active" onclick="switchTab(this,'tab-paid')">已請款明細</div>
-      <div class="tab-item" onclick="switchTab(this,'tab-unpaid')">未請款明細</div>
-    </div>
-
-    <!-- 已請款明細 -->
-    <div id="tab-paid">
-      <!-- 公司 -->
-      <div class="creator-section">
-        <div class="section-label">公司</div>
-        <div class="card">
-          <div class="card-body">
-            <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
-              <div class="form-group">
-                <label>統編 / 身分證</label>
-                <input type="text" value="54225569" readonly style="background:#f7f8fc">
-              </div>
-              <div class="form-group">
-                <label>付款時間</label>
-                <input type="text" placeholder="yyyy/mm/dd">
-              </div>
-              <div class="form-group">
-                <label>發票號碼</label>
-                <input type="text" placeholder="輸入發票號碼">
-              </div>
-            </div>
-            <div style="margin-top:12px">
-              <table>
-                <thead>
-                  <tr>
-                    <th>發票號碼</th>
-                    <th>發票日期</th>
-                    <th class="amount">總銷售額</th>
-                    <th class="amount">總稅額</th>
-                    <th class="amount">總額</th>
-                    <th>格式</th>
-                    <th>付款時間</th>
-                    <th>摘要</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="font-mono">AA12345678</td>
-                    <td>6/10/2025</td>
-                    <td class="amount">401</td>
-                    <td class="amount">19</td>
-                    <td class="amount" style="font-weight:700">420</td>
-                    <td>21</td>
-                    <td>2025/6/25</td>
-                    <td class="text-sm" style="color:#4a5568">2024/12 測試課程<br>2025/01 測試課程</td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr style="background:#f7f8fc;font-weight:700">
-                    <td colspan="2" style="padding:8px 10px;color:#4a5568">已開立發票金額合計</td>
-                    <td class="amount" style="padding:8px 10px">401</td>
-                    <td class="amount" style="padding:8px 10px">19</td>
-                    <td class="amount" style="padding:8px 10px;color:#7c5cbf">420</td>
-                    <td colspan="3"></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 個人 -->
-      <div class="creator-section">
-        <div class="section-label">個人</div>
-        <div class="card">
-          <div class="card-body">
-            <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
-              <div class="form-group">
-                <label>統編 / 身分證</label>
-                <input type="text" value="A123456789" readonly style="background:#f7f8fc">
-              </div>
-              <div class="form-group">
-                <label>付款時間</label>
-                <input type="text" placeholder="yyyy/mm/dd">
-              </div>
-              <div class="form-group">
-                <label>發票號碼</label>
-                <input type="text" placeholder="輸入發票號碼">
-              </div>
-            </div>
-            <div style="margin-top:12px">
-              <table>
-                <thead>
-                  <tr>
-                    <th>摘要</th>
-                    <th class="amount">銷售額(A)</th>
-                    <th class="amount">負擔成本(B)</th>
-                    <th class="amount">總銷售額(C)</th>
-                    <th class="amount">代扣所得(G)</th>
-                    <th class="amount">代扣健保(H)</th>
-                    <th class="amount">總額(E)</th>
-                    <th class="amount">代墊費用(F)</th>
-                    <th class="amount">支付金額</th>
-                    <th>付款時間</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>2024/12 測試課程</td>
-                    <td class="amount">200</td><td class="amount text-muted">—</td>
-                    <td class="amount">200</td><td class="amount text-muted">—</td><td class="amount text-muted">—</td>
-                    <td class="amount">200</td><td class="amount text-muted">—</td>
-                    <td class="amount" style="font-weight:700">200</td>
-                    <td>2025/6/25</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 未請款明細 -->
-    <div id="tab-unpaid" style="display:none">
-      <!-- 篩選 -->
-      <div class="card" style="margin-bottom:12px">
-        <div class="card-body">
-          <div class="filter-grid" style="grid-template-columns:repeat(3,1fr)">
-            <div class="form-group">
-              <label>統編 / 身分證</label>
-              <input type="text" value="54225569" readonly style="background:#f7f8fc">
-            </div>
-            <div class="form-group">
-              <label>課名</label>
-              <select><option>全部課程</option><option>測試課程</option></select>
-            </div>
-            <div class="form-group">
-              <label>月份</label>
-              <select><option>全部</option><option>2025/02</option><option>2025/03</option></select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 公司 -->
-      <div class="creator-section">
-        <div class="section-label">公司</div>
-        <div class="card">
-          <div class="card-body" style="padding:0">
-            <table>
-              <thead>
-                <tr>
-                  <th>摘要</th>
-                  <th class="amount">銷售額(A)</th>
-                  <th class="amount">負擔成本(B)</th>
-                  <th class="amount">總銷售額(C)</th>
-                  <th class="amount">稅額(D)</th>
-                  <th class="amount">總額(E)</th>
-                  <th class="amount">代墊費用(F)</th>
-                  <th class="amount">支付金額</th>
-                  <th>扣住款項</th>
-                  <th>扣住原因</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="locked-row">
-                  <td>2025/02 測試課程<div><span class="badge badge-red" style="margin-top:2px">🔒</span></div></td>
-                  <td class="amount text-muted">100</td><td class="amount text-muted">—</td>
-                  <td class="amount text-muted">100</td><td class="amount text-muted">5</td>
-                  <td class="amount text-muted">95</td><td class="amount text-muted">—</td>
-                  <td class="amount text-muted">95</td><td>☑</td><td class="text-sm" style="color:#e53e3e">未更新文章</td>
-                </tr>
-                <tr>
-                  <td>2025/03 測試課程</td>
-                  <td class="amount">500</td><td class="amount text-muted">—</td>
-                  <td class="amount">500</td><td class="amount">25</td>
-                  <td class="amount">475</td><td class="amount text-muted">—</td>
-                  <td class="amount">475</td><td></td><td></td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr style="background:#f7f8fc;font-weight:700">
-                  <td style="padding:8px 10px;color:#4a5568">未付款總額（排除扣住）</td>
-                  <td class="amount" style="padding:8px 10px">500</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
-                  <td class="amount" style="padding:8px 10px">500</td><td class="amount" style="padding:8px 10px">25</td>
-                  <td class="amount" style="padding:8px 10px">475</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
-                  <td class="amount" style="padding:8px 10px;color:#7c5cbf">475</td><td colspan="2"></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- 個人 -->
-      <div class="creator-section">
-        <div class="section-label">個人</div>
-        <div class="card">
-          <div class="card-body" style="padding:0">
-            <table>
-              <thead>
-                <tr>
-                  <th>摘要</th>
-                  <th class="amount">銷售額(A)</th>
-                  <th class="amount">負擔成本(B)</th>
-                  <th class="amount">總銷售額(C)</th>
-                  <th class="amount">代扣所得(G)</th>
-                  <th class="amount">代扣健保(H)</th>
-                  <th class="amount">總額(E)</th>
-                  <th class="amount">代墊費用(F)</th>
-                  <th class="amount">支付金額</th>
-                  <th>扣住款項</th>
-                  <th>扣住原因</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="locked-row">
-                  <td>2025/02 測試課程<div><span class="badge badge-red" style="margin-top:2px">🔒</span></div></td>
-                  <td class="amount text-muted">100</td><td class="amount text-muted">—</td>
-                  <td class="amount text-muted">100</td><td class="amount text-muted">—</td><td class="amount text-muted">—</td>
-                  <td class="amount text-muted">95</td><td class="amount text-muted">—</td>
-                  <td class="amount text-muted">95</td><td>☑</td><td class="text-sm" style="color:#e53e3e">未更新文章</td>
-                </tr>
-                <tr>
-                  <td>2025/03 測試課程</td>
-                  <td class="amount">500</td><td class="amount text-muted">—</td>
-                  <td class="amount">500</td><td class="amount text-muted">—</td><td class="amount text-muted">—</td>
-                  <td class="amount">475</td><td class="amount text-muted">—</td>
-                  <td class="amount">475</td><td></td><td></td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr style="background:#f7f8fc;font-weight:700">
-                  <td style="padding:8px 10px;color:#4a5568">未付款總額（排除扣住）</td>
-                  <td class="amount" style="padding:8px 10px">500</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
-                  <td class="amount" style="padding:8px 10px">500</td>
-                  <td class="amount" style="padding:8px 10px;color:#a0aec0">—</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
-                  <td class="amount" style="padding:8px 10px">475</td><td class="amount" style="padding:8px 10px;color:#a0aec0">—</td>
-                  <td class="amount" style="padding:8px 10px;color:#7c5cbf">475</td><td colspan="2"></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- PAGE: 創作者中心 已移除 -->
+  <div class="page-section" id="page-creator" style="display:none"></div>
 
   <!-- ======== PAGE: 匯出報表 ======== -->
   <div class="page-section" id="page-export">
@@ -870,33 +617,61 @@
       </div>
     </div>
 
-    <div class="card" style="max-width:400px;margin-bottom:20px">
+    <!-- 付款日期範圍 -->
+    <div class="card" style="margin-bottom:20px">
       <div class="card-header">📅 付款日期</div>
       <div class="card-body">
-        <div class="form-group">
-          <label>選擇付款日期</label>
-          <input type="text" value="2025/06/25" style="max-width:200px">
+        <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
+          <div class="form-group" style="margin:0">
+            <label>起始日期</label>
+            <input type="text" value="2025/06/01" style="max-width:160px">
+          </div>
+          <div style="padding-bottom:8px;color:#a0aec0;font-size:14px">—</div>
+          <div class="form-group" style="margin:0">
+            <label>截止日期</label>
+            <input type="text" value="2025/06/25" style="max-width:160px">
+          </div>
         </div>
-        <div style="margin-top:8px;font-size:11px;color:#718096">依此日期篩選，資料排列依發票 key 入時間順序</div>
+        <div style="margin-top:8px;font-size:11px;color:#718096">依此日期範圍篩選，資料排列依發票 key 入時間順序</div>
       </div>
     </div>
 
-    <div class="export-grid">
-      <div class="export-card">
-        <div class="export-card-title"><span class="export-icon">📄</span> 財務系統匯入格式</div>
-        <div class="export-card-desc">
-          公司專用。每 100 筆產生一個檔案，含傳票類別、科目編號、分析編號等財務系統欄位。
-        </div>
+    <!-- 財務系統匯入格式（全寬，含兩種傳票） -->
+    <div class="export-card" style="margin-bottom:16px">
+      <div class="export-card-title"><span class="export-icon">📄</span> 財務系統匯入格式</div>
+      <div class="export-card-desc">
+        每 100 筆產生一個檔案，依付款日期篩選，資料排列依發票 key 入時間順序。分別產出公司及個人報表。
+      </div>
+      <!-- 進項稅額傳票 -->
+      <div style="border-top:1px solid #e2e8f0;padding-top:12px;margin-top:8px">
+        <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:8px">進項稅額傳票</div>
         <div class="export-card-actions">
           <span class="badge badge-purple">公司</span>
-          <button class="btn btn-primary btn-sm" style="margin-left:auto">下載</button>
+          <span class="badge badge-gray">個人</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
+          <button class="btn btn-secondary btn-sm">個人</button>
         </div>
       </div>
+      <!-- 沖帳傳票 -->
+      <div style="border-top:1px solid #e2e8f0;padding-top:12px;margin-top:8px">
+        <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:4px">沖帳傳票</div>
+        <div class="export-card-desc" style="font-size:11px;margin-bottom:8px">複式傳票格式，含科目編號、借貸方向、分析編號。個人另含代收稅款及補充保費分錄。</div>
+        <div class="export-card-actions">
+          <span class="badge badge-purple">公司</span>
+          <span class="badge badge-gray">個人</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
+          <button class="btn btn-secondary btn-sm">個人</button>
+        </div>
+      </div>
+    </div>
 
+    <!-- 國泰銀行 + 付款報表（2欄） -->
+    <div class="export-grid">
       <div class="export-card">
         <div class="export-card-title"><span class="export-icon">🏦</span> 國泰銀行付款匯入</div>
         <div class="export-card-desc">
-          加總同一統一編號在指定付款日的金額，輸出收款行代碼、帳號、戶名等欄位。
+          依付款日期篩選，資料排列依發票 key 入時間順序。加總支付給同一位老師的金額。<br>
+          資料來源：提案者後台銀行資訊。
         </div>
         <div class="export-card-actions">
           <span class="badge badge-purple">公司</span>
@@ -909,22 +684,7 @@
       <div class="export-card">
         <div class="export-card-title"><span class="export-icon">📊</span> 付款報表</div>
         <div class="export-card-desc">
-          資料來源 finance。<br>
-          <strong>公司：</strong>排序編號、分析編號、銷售額(A/B/C/D/E/F/G)、發票資訊、銀行代碼/帳號/戶名<br>
-          <strong>個人：</strong>所得、代扣繳所得稅、代扣二代健保、訂閱淨所得(A)、負擔成本(B)、代墊費用(C)、支付金額(D=A+B+C)、銀行代碼/帳號/戶名/戶籍地址
-        </div>
-        <div class="export-card-actions">
-          <span class="badge badge-purple">公司</span>
-          <span class="badge badge-gray">個人</span>
-          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
-          <button class="btn btn-secondary btn-sm">個人</button>
-        </div>
-      </div>
-
-      <div class="export-card">
-        <div class="export-card-title"><span class="export-icon">📋</span> 沖帳傳票</div>
-        <div class="export-card-desc">
-          複式傳票格式，含科目編號、借貸方向、分析編號。個人另含代收稅款及補充保費分錄。
+          依付款日期篩選，資料排列依發票 key 入時間順序。分別產出公司及個人報表。
         </div>
         <div class="export-card-actions">
           <span class="badge badge-purple">公司</span>
