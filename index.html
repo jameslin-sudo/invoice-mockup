@@ -638,25 +638,6 @@
       </div>
     </div>
 
-    <!-- 付款日期範圍 -->
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">📅 付款日期範圍</div>
-      <div class="card-body">
-        <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
-          <div class="form-group" style="margin:0">
-            <label>起始日期</label>
-            <input type="text" value="2025/06/01" style="max-width:160px">
-          </div>
-          <div style="padding-bottom:8px;color:#a0aec0;font-size:14px">—</div>
-          <div class="form-group" style="margin:0">
-            <label>截止日期</label>
-            <input type="text" value="2025/06/25" style="max-width:160px">
-          </div>
-        </div>
-        <div style="margin-top:8px;font-size:11px;color:#718096">依此日期範圍篩選，資料排列依發票 key 入時間順序。未選定日期時，所有按鈕為 disabled。</div>
-      </div>
-    </div>
-
     <!-- 1-1 進項稅額傳票 -->
     <div class="export-section">
       <div class="export-section-title">
@@ -664,6 +645,13 @@
         <span class="badge badge-purple" style="font-size:10px">僅公司</span>
       </div>
       <div class="export-section-desc">每 100 筆產生一個檔案。每筆記錄含 3 列：借方（D）、發票明細（Y）、貸方（C）。</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:#f7f8fc;border:1px solid #e2e8f0;border-radius:4px;padding:7px 10px">
+        <span style="font-size:11px;color:#718096;font-weight:600;white-space:nowrap">📅 付款日期</span>
+        <input type="text" value="2025/06/01" style="max-width:110px;font-size:11px">
+        <span style="color:#a0aec0">—</span>
+        <input type="text" value="2025/06/25" style="max-width:110px;font-size:11px">
+        <span style="font-size:10px;color:#a0aec0;margin-left:4px">未選定日期時下載按鈕 disabled</span>
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
       </div>
@@ -752,6 +740,12 @@
     <div class="export-section">
       <div class="export-section-title">📄 1-2 沖帳傳票</div>
       <div class="export-section-desc">複式傳票格式。個人另含代收稅款及補充保費兩筆額外分錄（橙色標示）。</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:#f7f8fc;border:1px solid #e2e8f0;border-radius:4px;padding:7px 10px">
+        <span style="font-size:11px;color:#718096;font-weight:600;white-space:nowrap">📅 付款日期</span>
+        <input type="text" value="2025/06/01" style="max-width:110px;font-size:11px">
+        <span style="color:#a0aec0">—</span>
+        <input type="text" value="2025/06/25" style="max-width:110px;font-size:11px">
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
         <button class="btn btn-secondary btn-sm">⬇ 下載（個人）</button>
@@ -838,6 +832,12 @@
     <div class="export-section">
       <div class="export-section-title">🏦 2 國泰銀行付款匯入</div>
       <div class="export-section-desc">依付款日期篩選，加總同一統編當日所有金額合為一行。資料來源：提案者後台銀行資訊。</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:#f7f8fc;border:1px solid #e2e8f0;border-radius:4px;padding:7px 10px">
+        <span style="font-size:11px;color:#718096;font-weight:600;white-space:nowrap">📅 付款日期</span>
+        <input type="text" value="2025/06/01" style="max-width:110px;font-size:11px">
+        <span style="color:#a0aec0">—</span>
+        <input type="text" value="2025/06/25" style="max-width:110px;font-size:11px">
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
         <button class="btn btn-secondary btn-sm">⬇ 下載（個人）</button>
@@ -872,6 +872,12 @@
     <div class="export-section">
       <div class="export-section-title">📊 3 付款報表</div>
       <div class="export-section-desc">依付款日期篩選，分別產出公司及個人報表。</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:#f7f8fc;border:1px solid #e2e8f0;border-radius:4px;padding:7px 10px">
+        <span style="font-size:11px;color:#718096;font-weight:600;white-space:nowrap">📅 付款日期</span>
+        <input type="text" value="2025/06/01" style="max-width:110px;font-size:11px">
+        <span style="color:#a0aec0">—</span>
+        <input type="text" value="2025/06/25" style="max-width:110px;font-size:11px">
+      </div>
       <div class="gs-label">公司</div>
       <div style="margin:8px 0">
         <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
