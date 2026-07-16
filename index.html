@@ -176,6 +176,17 @@
   .ppa-warning .cell-input { background: #fff5f5; border-color: #feb2b2; }
   td.editable { padding: 4px 6px; }
 
+  /* Google Sheets 樣式預覽 */
+  .gs-wrap { overflow-x: auto; border: 1px solid #d0e4f7; border-radius: 4px; margin-top: 6px; }
+  .gs-table { border-collapse: collapse; font-size: 10px; white-space: nowrap; }
+  .gs-table thead th { background: #e8f0fe; color: #1a73e8; font-weight: 600; padding: 4px 10px; border: 1px solid #c5d5ea; text-align: left; position: sticky; top: 0; z-index: 1; }
+  .gs-table tbody td { padding: 3px 10px; border: 1px solid #e8eaed; color: #3c4043; background: #fff; }
+  .gs-row-num { background: #f1f3f4 !important; color: #80868b; text-align: center !important; font-weight: 600; border-right: 2px solid #c5d5ea !important; min-width: 30px; }
+  .export-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+  .export-section-title { font-size: 14px; font-weight: 700; color: #2d3748; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .export-section-desc { font-size: 12px; color: #718096; line-height: 1.5; margin-bottom: 8px; }
+  .gs-label { font-size: 10px; font-weight: 700; color: #c05621; background: #fffaf0; border-left: 3px solid #f6ad55; padding: 2px 8px; margin-top: 6px; display: block; }
+
   /* 編輯模式 */
   .btn-edit { border: none; background: none; cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 4px; color: #718096; transition: background .15s; }
   .btn-edit:hover { background: #ebf8ff; color: #2b6cb0; }
@@ -629,7 +640,7 @@
 
     <!-- 付款日期範圍 -->
     <div class="card" style="margin-bottom:20px">
-      <div class="card-header">📅 付款日期</div>
+      <div class="card-header">📅 付款日期範圍</div>
       <div class="card-body">
         <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
           <div class="form-group" style="margin:0">
@@ -642,66 +653,292 @@
             <input type="text" value="2025/06/25" style="max-width:160px">
           </div>
         </div>
-        <div style="margin-top:8px;font-size:11px;color:#718096">依此日期範圍篩選，資料排列依發票 key 入時間順序</div>
+        <div style="margin-top:8px;font-size:11px;color:#718096">依此日期範圍篩選，資料排列依發票 key 入時間順序。未選定日期時，所有按鈕為 disabled。</div>
       </div>
     </div>
 
-    <!-- 財務系統匯入格式（全寬，含兩種傳票） -->
-    <div class="export-card" style="margin-bottom:16px">
-      <div class="export-card-title"><span class="export-icon">📄</span> 財務系統匯入格式</div>
-      <div class="export-card-desc">
-        每 100 筆產生一個檔案，依付款日期篩選，資料排列依發票 key 入時間順序。進項稅額傳票僅產出公司；沖帳傳票分別產出公司及個人。
+    <!-- 1-1 進項稅額傳票 -->
+    <div class="export-section">
+      <div class="export-section-title">
+        📄 1-1 進項稅額傳票
+        <span class="badge badge-purple" style="font-size:10px">僅公司</span>
       </div>
-      <!-- 進項稅額傳票 -->
-      <div style="border-top:1px solid #e2e8f0;padding-top:12px;margin-top:8px">
-        <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:8px">進項稅額傳票</div>
-        <div class="export-card-actions">
-          <span class="badge badge-purple">公司</span>
-          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
-        </div>
+      <div class="export-section-desc">每 100 筆產生一個檔案。每筆記錄含 3 列：借方（D）、發票明細（Y）、貸方（C）。</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
       </div>
-      <!-- 沖帳傳票 -->
-      <div style="border-top:1px solid #e2e8f0;padding-top:12px;margin-top:8px">
-        <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:4px">沖帳傳票</div>
-        <div class="export-card-desc" style="font-size:11px;margin-bottom:8px">複式傳票格式，含科目編號、借貸方向、分析編號。個人另含代收稅款及補充保費分錄。</div>
-        <div class="export-card-actions">
-          <span class="badge badge-purple">公司</span>
-          <span class="badge badge-gray">個人</span>
-          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
-          <button class="btn btn-secondary btn-sm">個人</button>
-        </div>
+      <div class="gs-wrap">
+        <table class="gs-table">
+          <thead>
+            <tr>
+              <th class="gs-row-num" style="background:#e8f0fe"></th>
+              <th>課稅資料</th><th>傳票分批檔</th><th>傳票類別</th><th>傳票說明</th>
+              <th>傳票編號參考值</th><th>傳票日期</th><th>科目編號</th><th>幣別編號</th>
+              <th>借貸</th><th>原值金額</th><th>匯率</th><th>等值金額</th>
+              <th>摘要1</th><th>摘要2</th><th>文件編號</th><th>文件類別</th>
+              <th>付款條件</th><th>文件日期</th><th>到期日</th>
+              <th>分析編號1</th><th>分析編號2</th><th>分析編號3</th><th>分析編號4</th><th>分析編號5</th>
+              <th>參考編號(1)</th><th>替換文件編號</th><th>相關科目編號</th><th>輸入用戶</th>
+              <th>用戶定義分析編號01</th><th>用戶定義分析編號02</th><th>用戶定義分析編號03</th>
+              <th>用戶定義分析編號04</th><th>用戶定義分析編號05</th><th>用戶定義分析編號06</th>
+              <th>用戶定義分析編號07</th><th>用戶定義分析編號08</th><th>用戶定義分析編號09</th>
+              <th>用戶定義分析編號10</th><th>數量</th><th>單位</th><th>參考編號(2)</th>
+              <th>申報月份</th><th>發票日期</th><th>格式代號</th><th>課稅別</th>
+              <th>彙加註記</th><th>扣抵代號</th><th>通關方式</th>
+              <th>發票字軌</th><th>發票號碼</th><th>特種稅額</th><th>總張數</th>
+              <th>銷售金額</th><th>營業稅額</th><th>發票訖號</th>
+              <th>買受人統編</th><th>銷售人統編</th><th>營業稅稅基</th><th>註銷註記</th>
+              <th>結匯日期</th><th>海關代徵營業稅繳納証號碼</th><th>外銷方式</th><th>報稅類別</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gs-row-num">1</td>
+              <td>N</td><td></td><td>J</td><td></td>
+              <td>1</td><td>2025/7/10</td><td>142300</td><td>NTD</td>
+              <td style="font-weight:700">D</td><td>529,537</td><td>1.00</td><td>529,537</td>
+              <td>QX47196652_時書數位內容股份有限公司</td><td></td><td>CP5296261-1</td><td>O</td>
+              <td></td><td>2025/7/10</td><td>2025/7/10</td>
+              <td>N</td><td>CP52962610</td><td>PPO</td><td></td><td>PPA</td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+            <tr style="background:#f0fff4">
+              <td class="gs-row-num" style="color:#276749;font-weight:700">Y</td>
+              <td style="font-weight:700;color:#276749">Y</td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td>
+              <td style="background:#f0fff4">09/2025</td><td style="background:#f0fff4">2025/7/2</td><td style="background:#f0fff4">25</td><td style="background:#f0fff4">1</td><td style="background:#f0fff4">N</td><td style="background:#f0fff4">1</td><td></td>
+              <td style="background:#f0fff4">QX</td><td style="background:#f0fff4">47196652</td><td></td><td></td>
+              <td style="background:#f0fff4">10,590,731</td><td style="background:#f0fff4">529,537</td><td></td>
+              <td style="background:#f0fff4">54225569</td><td style="background:#f0fff4">52962610</td><td></td><td style="background:#f0fff4">N</td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td class="gs-row-num">3</td>
+              <td>N</td><td></td><td>J</td><td></td>
+              <td>1</td><td>2025/7/10</td><td>CP52962610</td><td>NTD</td>
+              <td style="font-weight:700">C</td><td>529,537</td><td>1.00</td><td>529,537</td>
+              <td>QX47196652_時書數位內容股份有限公司</td><td></td><td>CP5296261-1</td><td>O</td>
+              <td></td><td>2025/7/10</td><td>2025/7/10</td>
+              <td>N</td><td>CP52962610</td><td>PPO</td><td></td><td>PPA</td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- 國泰銀行 + 付款報表（2欄） -->
-    <div class="export-grid">
-      <div class="export-card">
-        <div class="export-card-title"><span class="export-icon">🏦</span> 國泰銀行付款匯入</div>
-        <div class="export-card-desc">
-          依付款日期篩選，資料排列依發票 key 入時間順序。加總支付給同一位老師的金額。<br>
-          資料來源：提案者後台銀行資訊。
-        </div>
-        <div class="export-card-actions">
-          <span class="badge badge-purple">公司</span>
-          <span class="badge badge-gray">個人</span>
-          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
-          <button class="btn btn-secondary btn-sm">個人</button>
-        </div>
+    <!-- 1-2 沖帳傳票 -->
+    <div class="export-section">
+      <div class="export-section-title">📄 1-2 沖帳傳票</div>
+      <div class="export-section-desc">複式傳票格式。個人另含代收稅款及補充保費兩筆額外分錄（橙色標示）。</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
+        <button class="btn btn-secondary btn-sm">⬇ 下載（個人）</button>
       </div>
-
-      <div class="export-card">
-        <div class="export-card-title"><span class="export-icon">📊</span> 付款報表</div>
-        <div class="export-card-desc">
-          依付款日期篩選，資料排列依發票 key 入時間順序。分別產出公司及個人報表。
-        </div>
-        <div class="export-card-actions">
-          <span class="badge badge-purple">公司</span>
-          <span class="badge badge-gray">個人</span>
-          <button class="btn btn-outline btn-sm" style="margin-left:auto">公司</button>
-          <button class="btn btn-secondary btn-sm">個人</button>
-        </div>
+      <div class="gs-label">公司</div>
+      <div class="gs-wrap">
+        <table class="gs-table">
+          <thead>
+            <tr>
+              <th class="gs-row-num" style="background:#e8f0fe"></th>
+              <th>公司編號</th><th>分批檔編號</th><th>傳票日期</th><th>傳票編號</th>
+              <th>會計期</th><th>用戶定義分析編號 1</th><th>科目編號</th><th>科目說明</th>
+              <th>傳票摘要 1</th><th>貨幣編號</th><th>原值金額</th><th>兌換率</th>
+              <th>等值金額</th><th>借/貸</th><th>分析編號 1</th><th>分析編號 2</th>
+              <th>分析編號 3</th><th>分析編號 4</th><th>分析編號 5</th>
+              <th>文件編號</th><th>文件類別</th><th>文件日期</th><th>文件到期日</th><th>相關科目編號</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gs-row-num">1</td>
+              <td>P01</td><td></td><td>2025/6/25</td><td>J01</td>
+              <td>06/2025</td><td></td><td>CP95021130</td><td></td>
+              <td>可轉債鄧哥2025年5月份訂閱金額(發票)</td><td>NTD</td><td>61,380</td><td>1</td>
+              <td>61,380</td><td>D</td><td>N</td><td>CP950211</td>
+              <td>NSS</td><td></td><td>PPA</td>
+              <td>CP950211-5</td><td>O</td><td>2025/06/25</td><td>2025/06/25</td><td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="gs-label" style="margin-top:10px">個人（橙色列為有代收扣款的額外分錄）</div>
+      <div class="gs-wrap">
+        <table class="gs-table">
+          <thead>
+            <tr>
+              <th class="gs-row-num" style="background:#e8f0fe"></th>
+              <th>公司編號</th><th>分批檔編號</th><th>傳票日期</th><th>傳票編號</th>
+              <th>會計期</th><th>用戶定義分析編號 1</th><th>科目編號</th><th>科目說明</th>
+              <th>傳票摘要 1</th><th>貨幣編號</th><th>原值金額</th><th>兌換率</th>
+              <th>等值金額</th><th>借/貸</th><th>分析編號 1</th><th>分析編號 2</th>
+              <th>分析編號 3</th><th>分析編號 4</th><th>分析編號 5</th>
+              <th>文件編號</th><th>文件類別</th><th>文件日期</th><th>文件到期日</th><th>相關科目編號</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gs-row-num">1</td>
+              <td>P01</td><td></td><td>2025/6/25</td><td>J01</td>
+              <td>06/2025</td><td>9B-98</td><td>CPN1248224</td><td></td>
+              <td>90All2025年5月份訂閱金額</td><td>NTD</td><td>431</td><td>1</td>
+              <td>431</td><td>D</td><td>N</td><td>CPN12482</td>
+              <td>NSS</td><td></td><td>PPA</td>
+              <td>CPN12482-5</td><td>O</td><td>2025/06/25</td><td>2025/06/25</td><td></td>
+            </tr>
+            <tr style="background:#fffaf0">
+              <td class="gs-row-num" style="background:#fffaf0 !important;color:#c05621">+</td>
+              <td style="background:#fffaf0">P01</td><td style="background:#fffaf0"></td><td style="background:#fffaf0">2025/6/25</td><td style="background:#fffaf0">J01</td>
+              <td style="background:#fffaf0">06/2025</td><td style="background:#fffaf0">9B-98</td>
+              <td style="background:#fffaf0;font-weight:600;color:#c05621">233500</td>
+              <td style="background:#fffaf0;font-weight:600;color:#c05621">代收稅款</td>
+              <td style="background:#fffaf0">股市價值投2025年5月份訂閱金額-所得稅</td><td style="background:#fffaf0">NTD</td><td style="background:#fffaf0">3,689</td><td style="background:#fffaf0">1</td>
+              <td style="background:#fffaf0">3,689</td><td style="background:#fffaf0">C</td><td style="background:#fffaf0">N</td><td style="background:#fffaf0">CPF1281B</td>
+              <td style="background:#fffaf0">NSS</td><td style="background:#fffaf0"></td><td style="background:#fffaf0">PPA</td>
+              <td style="background:#fffaf0">CPF1281B-5</td><td style="background:#fffaf0">O</td><td style="background:#fffaf0">2025/06/25</td><td style="background:#fffaf0">2025/07/10</td><td style="background:#fffaf0"></td>
+            </tr>
+            <tr style="background:#fffaf0">
+              <td class="gs-row-num" style="background:#fffaf0 !important;color:#c05621">+</td>
+              <td style="background:#fffaf0">P01</td><td style="background:#fffaf0"></td><td style="background:#fffaf0">2025/6/25</td><td style="background:#fffaf0">J01</td>
+              <td style="background:#fffaf0">06/2025</td><td style="background:#fffaf0">9B-98</td>
+              <td style="background:#fffaf0;font-weight:600;color:#c05621">233603</td>
+              <td style="background:#fffaf0;font-weight:600;color:#c05621">代收款-補充保費</td>
+              <td style="background:#fffaf0">股市價值投2025年5月份訂閱金額-補充保費</td><td style="background:#fffaf0">NTD</td><td style="background:#fffaf0">778</td><td style="background:#fffaf0">1</td>
+              <td style="background:#fffaf0">778</td><td style="background:#fffaf0">C</td><td style="background:#fffaf0">N</td><td style="background:#fffaf0">CPF1281B</td>
+              <td style="background:#fffaf0">NSS</td><td style="background:#fffaf0"></td><td style="background:#fffaf0">PPA</td>
+              <td style="background:#fffaf0">CPF1281B-5</td><td style="background:#fffaf0">O</td><td style="background:#fffaf0">2025/06/25</td><td style="background:#fffaf0">2025/07/31</td><td style="background:#fffaf0"></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <!-- 2 國泰銀行 -->
+    <div class="export-section">
+      <div class="export-section-title">🏦 2 國泰銀行付款匯入</div>
+      <div class="export-section-desc">依付款日期篩選，加總同一統編當日所有金額合為一行。資料來源：提案者後台銀行資訊。</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
+        <button class="btn btn-secondary btn-sm">⬇ 下載（個人）</button>
+      </div>
+      <div class="gs-wrap">
+        <table class="gs-table">
+          <thead>
+            <tr>
+              <th class="gs-row-num" style="background:#e8f0fe"></th>
+              <th>收款行通匯代碼</th>
+              <th>收款人帳號（最多16位）</th>
+              <th>收款人統編（最多10位）</th>
+              <th>實際匯款金額</th>
+              <th>收款人姓名（最多35個中文字）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gs-row-num">1</td>
+              <td>0132398</td>
+              <td>239035018118</td>
+              <td></td>
+              <td>123,456</td>
+              <td>瑞奧股份有限公司</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3 付款報表 -->
+    <div class="export-section">
+      <div class="export-section-title">📊 3 付款報表</div>
+      <div class="export-section-desc">依付款日期篩選，分別產出公司及個人報表。</div>
+      <div class="gs-label">公司</div>
+      <div style="margin:8px 0">
+        <button class="btn btn-outline btn-sm">⬇ 下載（公司）</button>
+      </div>
+      <div class="gs-wrap">
+        <table class="gs-table">
+          <thead>
+            <tr>
+              <th class="gs-row-num" style="background:#e8f0fe"></th>
+              <th>付款時間</th><th>排序編號</th><th>分析編號</th><th>專案名稱</th>
+              <th>案主類別</th><th>案主名稱</th>
+              <th>銷售額 (A)</th><th>負擔成本 (B)</th><th>總銷售額 (C)</th>
+              <th>稅額 (D)</th><th>總額 (E)</th><th>代墊費用 (F)</th><th>支付金額 (G)</th>
+              <th>發票日期</th><th>發票字軌</th><th>發票號碼</th><th>統一編號</th><th>格式</th>
+              <th>銀行代碼</th><th>銀行帳號</th><th>銀行戶名</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gs-row-num">1</td>
+              <td>2025/6/25</td><td>CP83512415</td><td>CP83512A</td>
+              <td>投腦財經報｜鑑股知經</td><td>公司</td><td>曼森藝文實業有限公司</td>
+              <td>126</td><td></td><td>126</td><td>6</td><td>132</td><td></td><td>132</td>
+              <td>2025/6/11</td><td>MT</td><td>12345678</td><td>83512415</td><td>25</td>
+              <td>0130073</td><td>007035010127</td><td>曼森藝文實業有限公司</td>
+            </tr>
+            <tr>
+              <td class="gs-row-num">2</td>
+              <td>2025/6/25</td><td>CP95021130</td><td>CP950211</td>
+              <td>可轉債鄧哥｜今天債幹嘛！！</td><td>公司</td><td>予恩企業社</td>
+              <td>58,457</td><td></td><td>58,457</td><td>2,923</td><td>61,380</td><td></td><td>61,380</td>
+              <td>2025/6/11</td><td>MT</td><td>87654321</td><td>95021130</td><td>21</td>
+              <td>0095765</td><td>57650102301500</td><td>予恩企業社彭惠玲</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="gs-label" style="margin-top:10px">個人</div>
+      <div style="margin:8px 0">
+        <button class="btn btn-secondary btn-sm">⬇ 下載（個人）</button>
+      </div>
+      <div class="gs-wrap">
+        <table class="gs-table">
+          <thead>
+            <tr>
+              <th class="gs-row-num" style="background:#e8f0fe"></th>
+              <th>付款時間</th><th>排序編號</th><th>分析編號</th><th>專案名稱</th>
+              <th>案主類別</th><th>案主名稱</th>
+              <th>所得</th><th>代扣繳所得稅</th><th>代扣二代健保</th>
+              <th>訂閱淨所得 (A)</th><th>負擔成本 (B)</th><th>代墊費用 (C)</th><th>支付金額 (D)</th>
+              <th>銀行代碼</th><th>銀行帳號</th><th>銀行戶名</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gs-row-num">1</td>
+              <td>2025/6/25</td><td>CPN1248224</td><td>CPN12482</td>
+              <td>90All｜某某頻道</td><td>個人</td><td>謝榕軒</td>
+              <td>431</td><td>—</td><td>—</td>
+              <td>431</td><td></td><td></td><td>431</td>
+              <td>0088886</td><td>777201366096</td><td>謝榕軒</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
 </div><!-- /main -->
